@@ -12,6 +12,11 @@ module MotionResource
       def fetch_member(url, &block)
         get(url) do |response, json|
           if response.ok?
+            root = self.json_root
+            if json.has_key?(root) || json.has_key?(root.to_sym)
+              json = json[root] || json[root.to_sym]
+            end
+
             obj = instantiate(json)
             request_block_call(block, obj, response)
           else

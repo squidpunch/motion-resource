@@ -75,5 +75,10 @@ describe "base" do
       shape = Shape.instantiate("5")
       shape.id.should == 5
     end
+
+    it "should instantiate with json that has an appropriately named root" do
+      shape = Shape.instantiate(shape: {id: 5})
+      shape.id.should == 5
+    end
   end
 end
