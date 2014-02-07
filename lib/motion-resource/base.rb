@@ -20,9 +20,15 @@ module MotionResource
       def instantiate(json)
         if json.is_a?(Hash)
           json = json.symbolize_keys
+          root = self.json_root.singularize
+
+          if json.has_key?(root.to_sym)
+            json = json[root.to_sym]
+          end
         else
           json = { primary_key => json.to_i }
         end
+
         
         raise ArgumentError, "No :#{primary_key} parameter given for #{self.name}.instantiate" unless json[primary_key]
         

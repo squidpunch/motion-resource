@@ -37,6 +37,20 @@ describe "find" do
       @result.should.is_a Comment
     end
   end
+
+  it "should fetch member with model name as root in the response" do
+    stub_request(:get, "http://example.com/bar.json").to_return(json: { custom: { id: 10, text: '42'} })
+    CustomRootComment.fetch_member("bar") do |result|
+      @result = result
+      resume
+    end
+
+    wait_max 1.0 do
+      @result.should.is_a Comment
+      @result.id.should == 10
+      @result.text.should == '42'
+    end
+  end
   
   it "should give nil object if fetching single member fails" do
     stub_request(:get, "http://example.com/foo.json").to_return(status_code: 404)
