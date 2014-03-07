@@ -74,9 +74,17 @@ module MotionResource
         logger.log "#{method.upcase} #{url}"
         logger.log "payload: #{options[:payload]}" if options[:payload]
 
-        BubbleWrap::HTTP.send(method, url, options) do |response|
-          block.call response, decode_response(response, url, options)
+        action = lambda do
+          runLoop = NSRunLoop.currentRunLoop
+
+          BubbleWrap::HTTP.send(method, url, options) do |response|
+            block.call response, decode_response(response, url, options)
+          end
+          runLoop.run
         end
+
+        thread = NSThread.alloc.initWithTarget action, selector: "call", object: nil
+        thread.start
       end
     end
   end
