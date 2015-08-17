@@ -29,6 +29,10 @@ module MotionResource
         @on_auth_failure = block
       end
 
+      def cancel
+        @connection.cancel if @connection
+      end
+
       protected
 
       def decode_response(response, url, options)
@@ -74,7 +78,7 @@ module MotionResource
         logger.log "#{method.upcase} #{url}"
         logger.log "payload: #{options[:payload]}" if options[:payload]
 
-        BubbleWrap::HTTP.send(method, url, options) do |response|
+        @connection = BubbleWrap::HTTP.send(method, url, options) do |response|
           block.call response, decode_response(response, url, options)
         end
       end
